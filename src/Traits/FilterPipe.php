@@ -2,13 +2,12 @@
 
 namespace FilterPipe\Traits;
 
-use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Arr;
+use Illuminate\Pipeline\Pipeline;
+use Illuminate\Database\Eloquent\Builder;
 
 trait FilterPipe
 {
-
     /**
      * @param Builder $builder
      * @param array|string $filter

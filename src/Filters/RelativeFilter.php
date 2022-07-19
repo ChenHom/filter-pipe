@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RelativeFilter extends QueryFilter
 {
-    protected function search(Builder $builder, string $column, string $value, string $operator): Builder
+    protected function search(Builder $builder, string $column, $value, $operator = null): Builder
     {
-        $value = match ($operator) {
+        $value = match (reset($operator)) {
             'both' => "%{$value}%",
             'left' => "%{$value}",
             'right' => "{$value}%",

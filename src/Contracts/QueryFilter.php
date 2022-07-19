@@ -12,15 +12,27 @@ abstract class QueryFilter
 
     public function handle(Builder $builder, Closure $next, string $column, ...$operator): Builder
     {
-        return $next($this->apply($builder, $column, $this->detectorSearchColumn($column), ...$operator));
+        return $next(
+            $this->apply(
+                $builder,
+                $column,
+                $this->detectorSearchColumn($column),
+                ...$operator
+            )
+        );
     }
 
-    protected function search(Builder $builder, string $column, string $value, string $operator): Builder
+    /**
+     *
+     * @param Builder $builder
+     * @param string $column
+     * @param string|array $value
+     * @param string|array $operator
+     * @return Builder
+     */
+    protected function search(Builder $builder, string $column, $value, $operator = null): Builder
     {
-        if ($method = $this->whereMultipleValue($operator)) {
-            return $builder->{$method}($column, explode(',', $value));
-        }
-        return $builder->where($column, $operator ?: '=', $value);
+        return $builder->where($column, $operator , $value);
     }
 
     /**
@@ -28,33 +40,15 @@ abstract class QueryFilter
      * @param Builder $builder
      * @param string $fields
      * @param string $value
-     * @param string $operators
+     * @param array $operators
      * @return Builder
      */
     protected function apply(Builder $builder, string $fields, string $column, ...$operators): Builder
     {
         return $builder->when(
             request($fields),
-            function (Builder $builder, $query) use ($column, $operators) {
-                foreach (Arr::wrap($query) as $key => $possible) {
-                    $builder = $builder->when(
-                        $possible,
-                        fn ($search, $value) => $this->search($search, $column, $value, $operators[$key] ?? '')
-                    );
-                }
-                return $builder;
-            }
+            fn (Builder $builder, $query) => $this->search($builder, $column, $query, $operators)
         );
-    }
-
-    protected function whereMultipleValue($operator): string
-    {
-        $method = [
-            'between' => 'whereBetween',
-            'in' => 'whereIn',
-        ];
-
-        return data_get($method, $operator, '');
     }
 
     protected function detectorSearchColumn(string $string): string

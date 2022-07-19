@@ -30,14 +30,4 @@ class FilterPipeServiceProvider extends ServiceProvider
             $this->app->singleton($name, fn () => new $filter);
         }
     }
-
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
-    }
 }
